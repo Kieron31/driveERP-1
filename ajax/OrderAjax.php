@@ -1,5 +1,5 @@
 <?php
-
+//Hello World!
 $errFlg = 0;
 $errMsg = "";
 $jsonVal = new stdClass();
