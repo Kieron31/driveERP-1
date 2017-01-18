@@ -1,22 +1,3 @@
-<?php
-$sqlConnection = null;
-include_once 'ajax/config.php';
-$sqlConnection = connectToDatabase();
-if ($sqlConnection != null) {
-    $sqlQuery = "SELECT * FROM Products WHERE ProductCat = 'FP';";
-//    $result = sqlsrv_query($sqlConnection,$sqlQuery);
-    try {
-        $result = $sqlConnection->prepare($sqlQuery);
-        $result->execute();
-        $rs = $result->fetchAll(PDO::FETCH_ASSOC);
-//      print_r($rs);
-//      print_r($result->rowCount());
-    } catch (PDOExeption $e) {
-        echo $e->getMessage();
-    }
-}
-?>
-
 <html>
     <head>
         <link rel='stylesheet' type='text/css' href='jQuery/jquery-ui.min.css'>
@@ -37,8 +18,67 @@ if ($sqlConnection != null) {
             $(function () {
                 $("#datepicker").datepicker();
             });
-            
-            
+
+            function getIdAndSubmit() {
+                var ID = '0';
+                var searchName = $('#customerSearch').val();
+                var datepicker = $('#datepicker').val();
+                var email = $('#email').val();
+                var telephonenumber = $('#telephonenumber').val();
+                var currency = $('#currency').val();
+
+                $.ajax({
+                    url: 'ajax/OrderAjax.php',
+                    cache: false,
+                    type: 'POST',
+                    //async:false,
+                    data: {
+                        'request': 'getId',
+                        'searchName': searchName,
+                    },
+                    dataType: 'json',
+                    success: function (data)
+                    {
+                        ID = data.dataResult[0].CustomerId;
+                        //alert(ID);
+
+                        $.ajax({
+                            url: 'ajax/OrderAjax.php',
+                            cache: false,
+                            type: 'POST',
+                            //async:false,
+                            data: {
+                                'request': 'SubmitOrderHeader',
+                                'ID': ID,
+                                'datepicker': datepicker,
+                                'email': email,
+                                'telephonenumber': telephonenumber,
+                                'currency': currency,
+                            },
+                            dataType: 'json',
+                            success: function (data)
+                            {
+                                location.reload();
+                            },
+                            error: function (data)
+                            {
+                                alert('error in calling ajax page');
+                            }
+                        });
+
+                    },
+                    error: function (data)
+                    {
+                        alert('error in calling ajax page');
+                    }
+                });
+
+
+
+                //alert(ID);
+
+            }
+
             function toLoginPage() {
                 document.location.href = 'login.php';
             }
@@ -60,7 +100,7 @@ if ($sqlConnection != null) {
                 }
 
                 $.ajax({
-                    url: 'ajax/orderAjax.php',
+                    url: 'ajax/CustomerAjax.php',
                     cache: false,
                     type: 'POST',
                     //async:false,
@@ -90,7 +130,7 @@ if ($sqlConnection != null) {
                 });
             }
 
-            
+
 
         </script>
 
@@ -253,9 +293,9 @@ if ($sqlConnection != null) {
                     <p style="color:white;">Store Location:</p>
                     <input  onkeyup="searchUpdate();"id="customerSearch" type="text"placeholder="Please enter the location of the store..."size="50">
                 </div>
-                
+
                 <div id="searchResults" style="background-color: whitesmoke; border-radius: 2px; padding: 5px;display:none;">
-                    
+
                 </div>
 
                 <div style="margin:0 auto;margin-top: 5px;text-align: center;">
@@ -264,18 +304,18 @@ if ($sqlConnection != null) {
                 </div>
                 <div style="margin:0 auto;margin-top: 5px;text-align: center;">
                     <p style="color:white;">Email:</p>
-                    <input type="email" placeholder="Enter your email..."size="50">
+                    <input type="email" id="email" placeholder="Enter your email..."size="50">
                 </div>
                 <div style="margin:0 auto;margin-top: 5px;text-align: center;">
                     <p style="color:white;">Telephone number:</p>
-                    <input type="text" placeholder="Enter your telephone number..."size="50">
+                    <input type="text" id="telephonenumber" placeholder="Enter your telephone number..."size="50">
                 </div>
                 <div style="margin:0 auto;margin-top: 5px;text-align: center;">
                     <p style="color:white;">Currency:</p>
-                    <input type="text" value="GBP" disabled="true" size="50">
+                    <input type="text" id="currency" value="GBP" disabled="true" size="50">
                 </div>
                 <div style="margin:0 auto;margin-top: 35px;text-align: center;">
-                    <input type="button" id="SubmitButton" value="Submit">
+                    <input type="button" id="SubmitButton" value="Continue" onclick="getIdAndSubmit()">
                 </div>
 
 
