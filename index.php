@@ -1,3 +1,11 @@
+<!--
+    _   Dave the Wizard
+  _/*\_  
+ _(o.o)_(*) 
+(_  o  _)|
+  / o \  |
+ (_/ \_) | 
+-->
 <html>
     <head>
         <script src="jQuery/jquery-min.js"></script>
